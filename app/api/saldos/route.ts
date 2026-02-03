@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  return NextResponse.json([
-    { area: "LOGISTICA REVERSA", total: 1200 },
-    { area: "PRODUCAO", total: 800 },
-    { area: "FLV", total: 500 },
-  ]);
+  return NextResponse.json({
+    LOGISTICA_REVERSA: {
+      PBR: 0,
+      CHEP: 0,
+      DESCARTAVEL: 0,
+      GAIOLA: 0,
+    },
+  });
 }
