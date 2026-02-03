@@ -2,126 +2,164 @@
 
 import { useState } from "react";
 
+const AREAS = [
+  "LOGISTICA REVERSA",
+  "PRODUÇÃO",
+  "FLV",
+  "MERCEARIA",
+  "FRIGORIFICO",
+  "PERECIVEL",
+];
+
+const MATERIAIS = ["PBR", "DESCARTAVEL", "CHEP", "GAIOLA"];
+
 export default function SaidaPage() {
-  const [fornecedor, setFornecedor] = useState("");
-  const [tipoPalete, setTipoPalete] = useState("");
-  const [quantidade, setQuantidade] = useState<number | "">("");
-  const [mensagem, setMensagem] = useState("");
-  const [erro, setErro] = useState("");
+  const [destino, setDestino] = useState("");
+  const [material, setMaterial] = useState("");
+  const [quantidade, setQuantidade] = useState("");
+  const [observacoes, setObservacoes] = useState("");
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setMensagem("");
-    setErro("");
-
-    if (!fornecedor || !tipoPalete || !quantidade) {
-      setErro("Preencha todos os campos obrigatórios.");
-      return;
-    }
-
-    const res = await fetch("/api/saida", {
+  async function salvar() {
+    await fetch("/api/saida", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        tipoOperacao: "SAIDA",
-        areaOrigem: "LOGISTICA REVERSA",
-        areaDestino: fornecedor,
-        tipoPalete,
+        areaDestino: destino,
+        tipoPalete: material,
         quantidade: Number(quantidade),
+        observacoes,
       }),
     });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      setErro(data.error || "Erro ao registrar saída.");
-      return;
-    }
-
-    setMensagem("Saída registrada com sucesso!");
-    setFornecedor("");
-    setTipoPalete("");
+    alert("SAÍDA REGISTRADA COM SUCESSO");
+    setDestino("");
+    setMaterial("");
     setQuantidade("");
+    setObservacoes("");
   }
 
   return (
-    <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-2">Registro de Saída de Paletes</h1>
-      <p className="text-gray-600 mb-6">
-        Use para registrar retirada/expedição de paletes da área.
-      </p>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Origem fixa */}
-        <div>
-          <label className="block text-sm font-medium">Área de Origem (fixa)</label>
-          <input
-            value="LOGISTICA REVERSA"
-            disabled
-            className="w-full border rounded p-2 bg-gray-100"
-          />
+    <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-12">
+        {/* LOGO */}
+        <div className="flex justify-center mb-6">
+          <img src="/logo-oba.png" alt="Oba Hortifruti" className="h-14" />
         </div>
 
-        {/* Fornecedor / Destino */}
-        <div>
-          <label className="block text-sm font-medium">Fornecedor / Destino</label>
-          <select
-            value={fornecedor}
-            onChange={(e) => setFornecedor(e.target.value)}
-            className="w-full border rounded p-2"
-          >
-            <option value="">Selecione...</option>
-            <option value="Comércio de Frutas Steck">
-              Comércio de Frutas Steck
-            </option>
-            <option value="Fornecedor Exemplo 2">
-              Fornecedor Exemplo 2
-            </option>
-          </select>
-        </div>
+        {/* TÍTULO */}
+        <h1 className="text-2xl font-bold text-center text-[var(--oba-green)] mb-8">
+          REGISTRO DE SAÍDA DE PALETES
+        </h1>
 
-        {/* Tipo de Palete */}
-        <div>
-          <label className="block text-sm font-medium">Tipo de Palete</label>
-          <select
-            value={tipoPalete}
-            onChange={(e) => setTipoPalete(e.target.value)}
-            className="w-full border rounded p-2"
-          >
-            <option value="">Selecione...</option>
-            <option value="PBR">PBR</option>
-            <option value="CHEP">CHEP</option>
-            <option value="DESCARTAVEL">DESCARTÁVEL</option>
-            <option value="GAIOLA">GAIOLA</option>
-          </select>
-        </div>
+        {/* DESTINO */}
+        <Label>DESTINO</Label>
+        <Select value={destino} onChange={setDestino} lista={AREAS} />
 
-        {/* Quantidade */}
-        <div>
-          <label className="block text-sm font-medium">Quantidade</label>
-          <input
-            type="number"
-            min={1}
-            value={quantidade}
-            onChange={(e) =>
-              setQuantidade(e.target.value ? Number(e.target.value) : "")
-            }
-            className="w-full border rounded p-2"
-          />
-        </div>
+        {/* MATERIAL */}
+        <Label>MATERIAL</Label>
+        <Select value={material} onChange={setMaterial} lista={MATERIAIS} />
 
-        {/* Mensagens */}
-        {erro && <p className="text-red-600">{erro}</p>}
-        {mensagem && <p className="text-green-600">{mensagem}</p>}
+        {/* QUANTIDADE */}
+        <Label>QUANTIDADE</Label>
+        <InputNumero value={quantidade} onChange={setQuantidade} />
 
-        {/* Botão */}
+        {/* OBSERVAÇÕES */}
+        <Label>OBSERVAÇÕES</Label>
+        <Textarea value={observacoes} onChange={setObservacoes} />
+
+        {/* BOTÃO */}
         <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          onClick={salvar}
+          className="w-full bg-[var(--oba-green)] hover:brightness-110
+                     text-white font-bold py-4 rounded-2xl
+                     transition-all text-lg"
         >
-          Registrar Saída
+          REGISTRAR SAÍDA
         </button>
-      </form>
+
+        {/* VOLTAR */}
+        <div className="text-center mt-6">
+          <a
+            href="/"
+            className="font-semibold text-[var(--oba-orange)] hover:underline"
+          >
+            VOLTAR AO INÍCIO
+          </a>
+        </div>
+      </div>
     </div>
+  );
+}
+
+/* ===== COMPONENTES ===== */
+
+function Label({ children }: { children: React.ReactNode }) {
+  return <label className="block font-semibold mb-1">{children}</label>;
+}
+
+function Select({
+  value,
+  onChange,
+  lista,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  lista: string[];
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full mb-5 p-3 border rounded-xl
+                 focus:outline-none
+                 focus:border-[var(--oba-green)]
+                 focus:ring-2 focus:ring-[var(--oba-orange)]"
+    >
+      <option value="">SELECIONE</option>
+      {lista.map((item) => (
+        <option key={item} value={item}>
+          {item}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function InputNumero({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <input
+      type="number"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full mb-5 p-3 border rounded-xl
+                 focus:outline-none
+                 focus:border-[var(--oba-green)]
+                 focus:ring-2 focus:ring-[var(--oba-orange)]"
+    />
+  );
+}
+
+function Textarea({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <textarea
+      rows={4}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full mb-8 p-3 border rounded-xl
+                 focus:outline-none
+                 focus:border-[var(--oba-green)]
+                 focus:ring-2 focus:ring-[var(--oba-orange)]"
+    />
   );
 }

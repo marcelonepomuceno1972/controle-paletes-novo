@@ -7,103 +7,122 @@ type Loja = {
   nome: string;
 };
 
+const MATERIAIS = ["PBR", "DESCARTAVEL", "CHEP", "GAIOLA"];
+
 export default function RetornoLojaPage() {
   const [lojas, setLojas] = useState<Loja[]>([]);
-  const [lojaSelecionada, setLojaSelecionada] = useState("");
+  const [loja, setLoja] = useState("");
+  const [material, setMaterial] = useState("");
   const [quantidade, setQuantidade] = useState("");
+  const [observacoes, setObservacoes] = useState("");
 
-  // Carregar lojas do banco
   useEffect(() => {
-    async function carregarLojas() {
-      const res = await fetch("/api/lojas");
-      const data = await res.json();
-      setLojas(data);
-    }
-
-    carregarLojas();
+    fetch("/api/lojas")
+      .then((res) => res.json())
+      .then(setLojas)
+      .catch(() => alert("Erro ao carregar lojas"));
   }, []);
 
   async function salvar() {
-    if (!lojaSelecionada) {
-      alert("Selecione a loja");
-      return;
-    }
-
-    if (!quantidade) {
-      alert("Informe a quantidade");
+    if (!loja || !material || !quantidade) {
+      alert("Preencha todos os campos obrigatórios");
       return;
     }
 
     await fetch("/api/retorno-loja", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
-        loja: lojaSelecionada, // informativo
+        loja,
+        tipoPalete: material,
         quantidade: Number(quantidade),
-        tipoPalete: "PBR",
+        observacoes,
       }),
     });
 
-    alert("Retorno registrado com sucesso");
+    alert("RETORNO DE LOJA REGISTRADO COM SUCESSO");
+
+    setLoja("");
+    setMaterial("");
     setQuantidade("");
-    setLojaSelecionada("");
+    setObservacoes("");
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white p-6 rounded shadow">
-        <h2 className="font-bold text-xl mb-6 text-center">
-          Retorno de Loja
-        </h2>
+    <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-12">
+        <div className="flex justify-center mb-6">
+          <img src="/logo-oba.png" className="h-14" />
+        </div>
 
-        {/* Loja (Origem) */}
-        <label className="block text-sm font-medium mb-1">
-          Loja (Origem)
-        </label>
+        <h1 className="text-2xl font-bold text-center text-[var(--oba-green)] mb-8">
+          RETORNO DE LOJA
+        </h1>
+
+        {/* LOJA */}
+        <label className="block font-semibold mb-1">LOJA</label>
         <select
-          value={lojaSelecionada}
-          onChange={(e) => setLojaSelecionada(e.target.value)}
-          className="border p-2 w-full mb-4"
+          value={loja}
+          onChange={(e) => setLoja(e.target.value)}
+          className="w-full mb-5 p-3 border rounded-xl
+                     focus:ring-2 focus:ring-[var(--oba-orange)]"
         >
-          <option value="">Selecione a loja</option>
-          {lojas.map((loja) => (
-            <option key={loja.id} value={loja.nome}>
-              {loja.nome}
+          <option value="">SELECIONE A LOJA</option>
+          {lojas.map((l) => (
+            <option key={l.id} value={l.nome}>
+              {l.nome}
             </option>
           ))}
         </select>
 
-        {/* Destino fixo */}
-        <label className="block text-sm font-medium mb-1">
-          Destino
-        </label>
-        <input
-          value="LOGISTICA REVERSA"
-          disabled
-          className="border p-2 w-full mb-4 bg-gray-100"
-        />
+        {/* MATERIAL */}
+        <label className="block font-semibold mb-1">MATERIAL</label>
+        <select
+          value={material}
+          onChange={(e) => setMaterial(e.target.value)}
+          className="w-full mb-5 p-3 border rounded-xl
+                     focus:ring-2 focus:ring-[var(--oba-orange)]"
+        >
+          <option value="">SELECIONE O MATERIAL</option>
+          {MATERIAIS.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
 
-        {/* Quantidade */}
-        <label className="block text-sm font-medium mb-1">
-          Quantidade
-        </label>
+        {/* QUANTIDADE */}
+        <label className="block font-semibold mb-1">QUANTIDADE</label>
         <input
           type="number"
-          min={1}
           value={quantidade}
           onChange={(e) => setQuantidade(e.target.value)}
-          className="border p-2 w-full mb-6"
-          placeholder="Quantidade de paletes"
+          className="w-full mb-5 p-3 border rounded-xl
+                     focus:ring-2 focus:ring-[var(--oba-orange)]"
+        />
+
+        {/* OBSERVAÇÕES */}
+        <label className="block font-semibold mb-1">OBSERVAÇÕES</label>
+        <textarea
+          rows={4}
+          value={observacoes}
+          onChange={(e) => setObservacoes(e.target.value)}
+          className="w-full mb-8 p-3 border rounded-xl
+                     focus:ring-2 focus:ring-[var(--oba-orange)]"
         />
 
         <button
           onClick={salvar}
-          className="bg-purple-600 hover:bg-purple-700 text-white p-2 w-full rounded"
+          className="w-full bg-[var(--oba-green)] text-white
+                     font-bold py-4 rounded-2xl text-lg"
         >
-          Registrar Retorno
+          REGISTRAR RETORNO
         </button>
+
+        <div className="text-center mt-6">
+          <a href="/" className="text-[var(--oba-orange)] font-semibold">
+            VOLTAR AO INÍCIO
+          </a>
+        </div>
       </div>
     </div>
   );

@@ -11,122 +11,49 @@ const AREAS = [
   "PERECIVEL",
 ];
 
-const TIPOS = ["PBR", "CHEP", "DESCARTAVEL", "GAIOLA"];
+const MATERIAIS = ["PBR", "DESCARTAVEL", "CHEP", "GAIOLA"];
 
 export default function MovimentacaoPage() {
   const [origem, setOrigem] = useState("");
   const [destino, setDestino] = useState("");
-  const [tipoPalete, setTipoPalete] = useState("");
+  const [material, setMaterial] = useState("");
   const [quantidade, setQuantidade] = useState("");
+  const [observacoes, setObservacoes] = useState("");
 
   async function salvar() {
-    if (!origem || !destino || !tipoPalete || !quantidade) {
-      alert("Preencha todos os campos");
-      return;
-    }
-
-    if (origem === destino) {
-      alert("Origem e destino não podem ser iguais");
-      return;
-    }
-
     await fetch("/api/movimentacao", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
         areaOrigem: origem,
         areaDestino: destino,
-        tipoPalete,
+        tipoPalete: material,
         quantidade: Number(quantidade),
+        observacoes,
       }),
     });
 
-    alert("Movimentação registrada com sucesso");
-
-    setOrigem("");
-    setDestino("");
-    setTipoPalete("");
-    setQuantidade("");
+    alert("MOVIMENTAÇÃO REGISTRADA");
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white p-6 rounded shadow">
-        <h2 className="font-bold text-xl mb-6 text-center">
-          Movimentação de Paletes
-        </h2>
+    <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-12">
+        <div className="flex justify-center mb-6">
+          <img src="/logo-oba.png" className="h-14" />
+        </div>
 
-        {/* Origem */}
-        <label className="block text-sm font-medium mb-1">
-          Área de Origem
-        </label>
-        <select
-          value={origem}
-          onChange={(e) => setOrigem(e.target.value)}
-          className="border p-2 w-full mb-4"
-        >
-          <option value="">Selecione</option>
-          {AREAS.map((a) => (
-            <option key={a} value={a}>
-              {a}
-            </option>
-          ))}
-        </select>
+        <h1 className="text-2xl font-bold text-center text-[var(--oba-green)] mb-8">
+          MOVIMENTAÇÃO DE PALETES
+        </h1>
 
-        {/* Destino */}
-        <label className="block text-sm font-medium mb-1">
-          Área de Destino
-        </label>
-        <select
-          value={destino}
-          onChange={(e) => setDestino(e.target.value)}
-          className="border p-2 w-full mb-4"
-        >
-          <option value="">Selecione</option>
-          {AREAS.map((a) => (
-            <option key={a} value={a}>
-              {a}
-            </option>
-          ))}
-        </select>
+        <CampoSelect label="ORIGEM" value={origem} setValue={setOrigem} lista={AREAS} />
+        <CampoSelect label="DESTINO" value={destino} setValue={setDestino} lista={AREAS} />
+        <CampoSelect label="MATERIAL" value={material} setValue={setMaterial} lista={MATERIAIS} />
+        <CampoNumero label="QUANTIDADE" value={quantidade} setValue={setQuantidade} />
+        <CampoTexto label="OBSERVAÇÕES" value={observacoes} setValue={setObservacoes} />
 
-        {/* Tipo */}
-        <label className="block text-sm font-medium mb-1">
-          Tipo de Palete
-        </label>
-        <select
-          value={tipoPalete}
-          onChange={(e) => setTipoPalete(e.target.value)}
-          className="border p-2 w-full mb-4"
-        >
-          <option value="">Selecione</option>
-          {TIPOS.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
-
-        {/* Quantidade */}
-        <label className="block text-sm font-medium mb-1">
-          Quantidade
-        </label>
-        <input
-          type="number"
-          min={1}
-          value={quantidade}
-          onChange={(e) => setQuantidade(e.target.value)}
-          className="border p-2 w-full mb-6"
-        />
-
-        <button
-          onClick={salvar}
-          className="bg-blue-600 hover:bg-blue-700 text-white p-2 w-full rounded"
-        >
-          Registrar Movimentação
-        </button>
+        <BotaoSalvar texto="REGISTRAR MOVIMENTAÇÃO" />
+        <VoltarInicio />
       </div>
     </div>
   );

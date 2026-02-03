@@ -10,35 +10,39 @@ const AREAS = [
   "PERECIVEL",
 ];
 
-const TIPOS = ["PBR", "DESCARTAVEL", "GAIOLA", "CHEP"];
-
 export async function GET() {
   const movimentacoes = await prisma.Movimentacao.findMany();
 
-  // inicializa todas as áreas com zero
-  const saldoPorArea: Record<string, Record<string, number>> = {};
+  function calcularSaldo(area: string) {
+    return movimentacoes.reduce((acc, mov) => {
+      if (mov.areaDestino === area) return acc + mov.quantidade;
+      if (mov.areaOrigem === area) return acc - mov.quantidade;
+      return acc;
+    }, 0);
+  }
 
-  AREAS.forEach((area) => {
-    saldoPorArea[area] = {
-      PBR: 0,
-      DESCARTAVEL: 0,
-      GAIOLA: 0,
-      CHEP: 0,
+  const saldos = AREAS.map((area) => {
+    const saldo = calcularSaldo(area);
+
+    // Farol só para Logística Reversa
+    let farol = null;
+
+    if (area === "LOGISTICA REVERSA") {
+      if (saldo <= 600) {
+        farol = { status: "CRITICO", cor: "red" };
+      } else if (saldo <= 1100) {
+        farol = { status: "ATENCAO", cor: "yellow" };
+      } else {
+        farol = { status: "SAUDAVEL", cor: "green" };
+      }
+    }
+
+    return {
+      area,
+      saldo,
+      farol,
     };
   });
 
-  // aplica movimentações
-  movimentacoes.forEach((mov) => {
-    const { areaOrigem, areaDestino, tipoPalete, quantidade } = mov;
-
-    if (areaDestino && saldoPorArea[areaDestino]) {
-      saldoPorArea[areaDestino][tipoPalete] += quantidade;
-    }
-
-    if (areaOrigem && saldoPorArea[areaOrigem]) {
-      saldoPorArea[areaOrigem][tipoPalete] -= quantidade;
-    }
-  });
-
-  return NextResponse.json({ saldoPorArea });
+  return NextResponse.json(saldos);
 }

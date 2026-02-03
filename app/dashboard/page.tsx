@@ -1,94 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-type SaldoTipos = {
-  PBR: number;
-  DESCARTAVEL: number;
-  GAIOLA: number;
-  CHEP: number;
-};
-
-type DashboardData = {
-  saldoPorArea: Record<string, SaldoTipos>;
-};
-
 export default function DashboardPage() {
-  const [data, setData] = useState<DashboardData | null>(null);
-
-  useEffect(() => {
-    async function carregar() {
-      const res = await fetch("/api/dashboard");
-      const json = await res.json();
-      setData(json);
-    }
-    carregar();
-  }, []);
-
-  if (!data) {
-    return <p className="p-6">Carregando...</p>;
-  }
-
-  const totalGeral = Object.values(data.saldoPorArea).reduce(
-    (acc, area) =>
-      acc +
-      area.PBR +
-      area.DESCARTAVEL +
-      area.GAIOLA +
-      area.CHEP,
-    0
-  );
+  const areas = [
+    "LOGISTICA REVERSA",
+    "PRODUÇÃO",
+    "FLV",
+    "MERCEARIA",
+    "FRIGORIFICO",
+    "PERECIVEL",
+  ];
 
   return (
-    <div className="p-6 space-y-6">
-      {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-bold">
-          Dashboard — Saldos por Área
-        </h1>
-        <p className="text-gray-600">Total geral: {totalGeral}</p>
+    <div className="min-h-screen px-10 py-10">
+      <div className="flex justify-center mb-8">
+        <img src="/logo-oba.png" className="h-14" />
       </div>
 
-      {/* CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Object.entries(data.saldoPorArea).map(([area, tipos]) => {
-          const total =
-            tipos.PBR +
-            tipos.DESCARTAVEL +
-            tipos.GAIOLA +
-            tipos.CHEP;
+      <h1 className="text-2xl font-bold text-center text-[var(--oba-green)] mb-10">
+        DASHBOARD — SALDOS POR ÁREA
+      </h1>
 
-          return (
-            <div
-              key={area}
-              className="border rounded-lg p-4 bg-white shadow-sm"
-            >
-              <p className="text-sm text-gray-500">Área</p>
-              <p className="font-bold text-lg mb-2">{area}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {areas.map((area) => (
+          <div
+            key={area}
+            className="bg-white rounded-2xl shadow-md p-6"
+          >
+            <h2 className="font-bold text-lg mb-2">{area}</h2>
+            <p className="text-gray-500">
+              Nenhuma movimentação registrada
+            </p>
+          </div>
+        ))}
+      </div>
 
-              <p className="text-4xl font-bold mb-4">{total}</p>
-
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span>DESCARTÁVEL</span>
-                  <span>{tipos.DESCARTAVEL}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>GAIOLA</span>
-                  <span>{tipos.GAIOLA}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>PBR</span>
-                  <span>{tipos.PBR}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>CHEP</span>
-                  <span>{tipos.CHEP}</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+      <div className="text-center mt-10">
+        <a href="/" className="text-[var(--oba-orange)] font-semibold">
+          VOLTAR AO INÍCIO
+        </a>
       </div>
     </div>
   );

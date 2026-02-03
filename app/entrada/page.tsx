@@ -1,117 +1,169 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
+const AREAS = [
+  "LOGISTICA REVERSA",
+  "PRODUÇÃO",
+  "FLV",
+  "MERCEARIA",
+  "FRIGORIFICO",
+  "PERECIVEL",
+];
+
+const MATERIAIS = ["PBR", "DESCARTAVEL", "CHEP", "GAIOLA"];
 
 export default function EntradaPage() {
-  const [areaDestino, setAreaDestino] = useState("");
-  const [tipoPalete, setTipoPalete] = useState("");
-  const [quantidade, setQuantidade] = useState<number | "">("");
-  const [mensagem, setMensagem] = useState("");
-  const [erro, setErro] = useState("");
+  const [area, setArea] = useState("");
+  const [material, setMaterial] = useState("");
+  const [quantidade, setQuantidade] = useState("");
+  const [fornecedor, setFornecedor] = useState("");
+  const [observacoes, setObservacoes] = useState("");
+  const [fornecedores, setFornecedores] = useState<string[]>([]);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setMensagem("");
-    setErro("");
+  /* 🔄 Carrega fornecedores existentes */
+  useEffect(() => {
+    fetch("/api/fornecedores")
+      .then((r) => r.json())
+      .then((data) => setFornecedores(data.map((f: any) => f.nome)));
+  }, []);
 
-    if (!areaDestino || !tipoPalete || !quantidade) {
-      setErro("Preencha todos os campos obrigatórios.");
+  /* 💾 Salva fornecedor manualmente */
+  async function salvarFornecedor() {
+    if (!fornecedor.trim()) {
+      alert("Informe o nome do fornecedor");
       return;
     }
 
-    const res = await fetch("/api/entrada", {
+    await fetch("/api/fornecedores", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome: fornecedor.trim() }),
+    });
+
+    alert("FORNECEDOR SALVO");
+  }
+
+  /* 📦 Salva entrada */
+  async function salvarEntrada() {
+    if (!area || !material || !quantidade || !fornecedor) {
+      alert("Preencha todos os campos obrigatórios");
+      return;
+    }
+
+    await fetch("/api/entrada", {
+      method: "POST",
       body: JSON.stringify({
-        tipoOperacao: "ENTRADA",
-        areaOrigem: null,
-        areaDestino,
-        tipoPalete,
+        areaDestino: area,
+        tipoPalete: material,
         quantidade: Number(quantidade),
+        fornecedor: fornecedor.trim(),
+        observacoes,
       }),
     });
 
-    const data = await res.json();
+    alert("ENTRADA REGISTRADA");
 
-    if (!res.ok) {
-      setErro(data.error || "Erro ao registrar entrada.");
-      return;
-    }
-
-    setMensagem("Entrada registrada com sucesso!");
-    setAreaDestino("");
-    setTipoPalete("");
+    setArea("");
+    setMaterial("");
     setQuantidade("");
+    setFornecedor("");
+    setObservacoes("");
   }
 
   return (
-    <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-2">Registro de Entrada de Paletes</h1>
-      <p className="text-gray-600 mb-6">
-        Use para registrar entrada de paletes no estoque.
-      </p>
+    <div className="min-h-screen flex items-center justify-center px-6 bg-slate-100">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-12">
+        <h1 className="text-2xl font-bold text-center mb-8">
+          REGISTRO DE ENTRADA DE PALETES
+        </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Área Destino */}
-        <div>
-          <label className="block text-sm font-medium">Área de Destino</label>
-          <select
-            value={areaDestino}
-            onChange={(e) => setAreaDestino(e.target.value)}
-            className="w-full border rounded p-2"
-          >
-            <option value="">Selecione...</option>
-            <option value="LOGISTICA REVERSA">LOGISTICA REVERSA</option>
-            <option value="PRODUCAO">PRODUÇÃO</option>
-            <option value="FLV">FLV</option>
-            <option value="MERCEARIA">MERCEARIA</option>
-            <option value="FRIGORIFICO">FRIGORÍFICO</option>
-            <option value="PERECIVEL">PERECÍVEL</option>
-          </select>
-        </div>
+        {/* FORNECEDOR */}
+        <label className="font-semibold block mb-1">FORNECEDOR</label>
 
-        {/* Tipo de Palete */}
-        <div>
-          <label className="block text-sm font-medium">Tipo de Palete</label>
-          <select
-            value={tipoPalete}
-            onChange={(e) => setTipoPalete(e.target.value)}
-            className="w-full border rounded p-2"
-          >
-            <option value="">Selecione...</option>
-            <option value="PBR">PBR</option>
-            <option value="CHEP">CHEP</option>
-            <option value="DESCARTAVEL">DESCARTÁVEL</option>
-            <option value="GAIOLA">GAIOLA</option>
-          </select>
-        </div>
-
-        {/* Quantidade */}
-        <div>
-          <label className="block text-sm font-medium">Quantidade</label>
+        <div className="flex gap-2 mb-5">
           <input
-            type="number"
-            min={1}
-            value={quantidade}
-            onChange={(e) =>
-              setQuantidade(e.target.value ? Number(e.target.value) : "")
-            }
-            className="w-full border rounded p-2"
+            list="lista-fornecedores"
+            value={fornecedor}
+            onChange={(e) => setFornecedor(e.target.value)}
+            className="flex-1 p-3 border rounded-xl overflow-x-auto whitespace-nowrap"
+            placeholder="Digite ou selecione o fornecedor"
           />
+
+          <button
+            type="button"
+            onClick={salvarFornecedor}
+            className="px-5 rounded-xl bg-orange-600 text-white font-semibold"
+          >
+            SALVAR
+          </button>
         </div>
 
-        {/* Mensagens */}
-        {erro && <p className="text-red-600">{erro}</p>}
-        {mensagem && <p className="text-green-600">{mensagem}</p>}
+        <datalist id="lista-fornecedores">
+          {fornecedores.map((f) => (
+            <option key={f} value={f} />
+          ))}
+        </datalist>
 
-        {/* Botão */}
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+        {/* ÁREA */}
+        <label className="font-semibold">ÁREA DESTINO</label>
+        <select
+          value={area}
+          onChange={(e) => setArea(e.target.value)}
+          className="w-full mb-5 p-3 border rounded-xl"
         >
-          Registrar Entrada
+          <option value="">SELECIONE</option>
+          {AREAS.map((a) => (
+            <option key={a}>{a}</option>
+          ))}
+        </select>
+
+        {/* MATERIAL */}
+        <label className="font-semibold">MATERIAL</label>
+        <select
+          value={material}
+          onChange={(e) => setMaterial(e.target.value)}
+          className="w-full mb-5 p-3 border rounded-xl"
+        >
+          <option value="">SELECIONE</option>
+          {MATERIAIS.map((m) => (
+            <option key={m}>{m}</option>
+          ))}
+        </select>
+
+        {/* QUANTIDADE */}
+        <label className="font-semibold">QUANTIDADE</label>
+        <input
+          type="number"
+          value={quantidade}
+          onChange={(e) => setQuantidade(e.target.value)}
+          className="w-full mb-5 p-3 border rounded-xl"
+        />
+
+        {/* OBSERVAÇÕES */}
+        <label className="font-semibold">OBSERVAÇÕES</label>
+        <textarea
+          rows={3}
+          value={observacoes}
+          onChange={(e) => setObservacoes(e.target.value)}
+          className="w-full mb-8 p-3 border rounded-xl"
+        />
+
+        {/* BOTÃO PRINCIPAL */}
+        <button
+          onClick={salvarEntrada}
+          className="w-full bg-green-700 text-white font-bold py-4 rounded-2xl"
+        >
+          REGISTRAR ENTRADA
         </button>
-      </form>
+
+        {/* 🔙 VOLTAR AO INÍCIO */}
+        <div className="text-center mt-6">
+          <Link href="/" className="text-orange-600 font-semibold">
+            VOLTAR AO INÍCIO
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
