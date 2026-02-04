@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 
 type Loja = {
-  id: number;
+  codigo: string;
   nome: string;
 };
+
 
 const MATERIAIS = ["PBR", "DESCARTAVEL", "CHEP", "GAIOLA"];
 
@@ -68,10 +69,10 @@ export default function RetornoLojaPage() {
         >
           <option value="">SELECIONE A LOJA</option>
           {lojas.map((l) => (
-            <option key={l.id} value={l.nome}>
-              {l.nome}
-            </option>
-          ))}
+            <option key={l.codigo} value={l.codigo}>
+              {l.codigo} - {l.nome}
+              </option>
+            ))}
         </select>
 
         {/* MATERIAL */}
