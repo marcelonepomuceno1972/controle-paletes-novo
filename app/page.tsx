@@ -1,46 +1,64 @@
-import Link from "next/link";
+"use client";
+
+
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 
 export default function Home() {
-  return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-100 px-6">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-10 text-center space-y-6">
+const router = useRouter();
 
-        <h1 className="text-2xl font-bold mb-2">
-          CONTROLE DE PALETES
-        </h1>
 
-        <div className="space-y-3">
+return (
+<main className="min-h-screen flex items-center justify-center bg-slate-100">
+<div className="relative w-full max-w-6xl rounded-2xl overflow-hidden shadow-xl">
+{/* IMAGEM DE FUNDO */}
+<Image
+src="/capa-logistica-reversa-v2.png"
+alt="Logística Reversa"
+width={1800}
+height={1000}
+className="w-full h-auto object-contain"
+priority
+/>
 
-          <Link
-            href="/painel"
-            className="block w-full bg-gray-900 text-white py-3 rounded-xl font-semibold"
-          >
-            DASHBOARD
-          </Link>
 
-          <Link
-            href="/entrada"
-            className="block w-full bg-green-700 text-white py-3 rounded-xl font-semibold"
-          >
-            REGISTRO DE ENTRADA
-          </Link>
+{/* CONTAINER CENTRAL AJUSTADO (SUBIDO ~5cm / 180px) */}
+<div className="absolute inset-0 flex items-center justify-center">
+<div className="w-[820px] h-[520px] flex flex-col items-center justify-center gap-5 transform -translate-y-[30px]">
+<button
+onClick={() => router.push("/painel")}
+className="w-[320px] py-4 rounded-xl bg-slate-900 text-white text-lg font-bold hover:opacity-90 transition"
+>
+DASHBOARD
+</button>
 
-          <Link
-            href="/saida"
-            className="block w-full bg-red-700 text-white py-3 rounded-xl font-semibold"
-          >
-            REGISTRO DE SAÍDA
-          </Link>
 
-          <Link
-            href="/retorno-loja"
-            className="block w-full bg-orange-600 text-white py-3 rounded-xl font-semibold"
-          >
-            RETORNO DE LOJA
-          </Link>
+<button
+onClick={() => router.push("/entrada")}
+className="w-[320px] py-4 rounded-xl bg-green-600 text-white text-lg font-bold hover:opacity-90 transition"
+>
+REGISTRO DE ENTRADA
+</button>
 
-        </div>
-      </div>
-    </main>
-  );
+
+<button
+onClick={() => router.push("/saida")}
+className="w-[320px] py-4 rounded-xl bg-red-600 text-white text-lg font-bold hover:opacity-90 transition"
+>
+REGISTRO DE SAÍDA
+</button>
+
+
+<button
+onClick={() => router.push("/retorno-loja")}
+className="w-[320px] py-4 rounded-xl bg-orange-500 text-white text-lg font-bold hover:opacity-90 transition"
+>
+RETORNO DE LOJA
+</button>
+</div>
+</div>
+</div>
+</main>
+);
 }
