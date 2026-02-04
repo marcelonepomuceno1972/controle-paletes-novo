@@ -6,10 +6,10 @@ async function main() {
   await prisma.loja.createMany({
     skipDuplicates: true,
     data: [
-      { nome: "Oba Centro" },
-      { nome: "Oba Norte" },
-      { nome: "Oba Sul" },
-      { nome: "Oba Campinas" },
+      { digito: 1, nome: "Oba Centro" },
+      { digito: 2, nome: "Oba Norte" },
+      { digito: 3, nome: "Oba Sul" },
+      { digito: 4, nome: "Oba Campinas" },
     ],
   });
 }
