@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     );
   }
 
-  await prisma.Movimentacao.create({
+  await prisma.movimentacao.create({
     data: {
       tipoOperacao: "RETORNO",
       areaDestino: "LOGISTICA REVERSA",
