@@ -11,38 +11,42 @@ const AREAS = [
 ];
 
 export async function GET() {
-  const movimentacoes = await prisma.movimentacao.findMany();
+  try {
+    const movimentacoes = await prisma.movimentacao.findMany();
 
-  function calcularSaldo(area: string) {
-    return movimentacoes.reduce((acc, mov) => {
-      if (mov.areaDestino === area) return acc + mov.quantidade;
-      if (mov.areaOrigem === area) return acc - mov.quantidade;
-      return acc;
-    }, 0);
-  }
-
-  const saldos = AREAS.map((area) => {
-    const saldo = calcularSaldo(area);
-
-    // Farol só para Logística Reversa
-    let farol = null;
-
-    if (area === "LOGISTICA REVERSA") {
-      if (saldo <= 600) {
-        farol = { status: "CRITICO", cor: "red" };
-      } else if (saldo <= 1100) {
-        farol = { status: "ATENCAO", cor: "yellow" };
-      } else {
-        farol = { status: "SAUDAVEL", cor: "green" };
-      }
+    function calcularSaldo(area: string) {
+      return movimentacoes.reduce((acc, mov) => {
+        if (mov.destino === area) return acc + mov.quantidade;
+        if (mov.origem === area) return acc - mov.quantidade;
+        return acc;
+      }, 0);
     }
 
-    return {
-      area,
-      saldo,
-      farol,
-    };
-  });
+    const saldos = AREAS.map((area) => {
+      const saldo = calcularSaldo(area);
 
-  return NextResponse.json(saldos);
+      let farol = null;
+
+      if (area === "LOGISTICA REVERSA") {
+        if (saldo <= 600) {
+          farol = { status: "CRITICO", cor: "red" };
+        } else if (saldo <= 1100) {
+          farol = { status: "ATENCAO", cor: "yellow" };
+        } else {
+          farol = { status: "SAUDAVEL", cor: "green" };
+        }
+      }
+
+      return {
+        area,
+        saldo,
+        farol,
+      };
+    });
+
+    return NextResponse.json(saldos);
+  } catch (error) {
+    console.error("ERRO DASHBOARD:", error);
+    return NextResponse.json([]);
+  }
 }

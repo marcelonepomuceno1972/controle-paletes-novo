@@ -12,18 +12,24 @@ model Fornecedor {
   nome String @unique
 }
 
+model Loja {
+  id     Int    @id @default(autoincrement())
+  codigo String @unique
+  nome   String
+}
+
 model Area {
   id   Int    @id @default(autoincrement())
   nome String @unique
 }
 
 model Movimentacao {
-  id          Int      @id @default(autoincrement())
-  tipo        String
-  origem      String
-  destino     String
-  material    String
-  quantidade  Int
-  observacao  String?
-  createdAt   DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  tipo       String
+  origem     String
+  destino    String
+  material   String
+  quantidade Int
+  observacao String?
+  createdAt  DateTime @default(now())
 }
