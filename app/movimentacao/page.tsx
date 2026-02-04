@@ -3,6 +3,7 @@
 import { useState } from "react";
 import CampoSelect from "@/app/components/CampoSelect";
 import CampoNumero from "@/app/components/CampoNumero";
+import Link from "next/link";
 
 const AREAS = [
   "LOGISTICA REVERSA",
@@ -25,6 +26,7 @@ export default function MovimentacaoPage() {
   async function salvar() {
     await fetch("/api/movimentacao", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         areaOrigem: origem,
         areaDestino: destino,
@@ -35,28 +37,82 @@ export default function MovimentacaoPage() {
     });
 
     alert("MOVIMENTAÇÃO REGISTRADA");
+    setOrigem("");
+    setDestino("");
+    setMaterial("");
+    setQuantidade("");
+    setObservacoes("");
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-12">
-        <div className="flex justify-center mb-6">
-          <img src="/logo-oba.png" className="h-14" />
+    <main className="min-h-screen flex items-center justify-center px-6 bg-slate-100">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-10 space-y-6">
+
+        {/* LOGO */}
+        <div className="flex justify-center">
+          <img src="/logo-oba.png" alt="Logo" className="h-14" />
         </div>
 
-        <h1 className="text-2xl font-bold text-center text-[var(--oba-green)] mb-8">
+        <h1 className="text-2xl font-bold text-center text-green-700">
           MOVIMENTAÇÃO DE PALETES
         </h1>
 
-        <CampoSelect label="ORIGEM" value={origem} setValue={setOrigem} lista={AREAS} />
-        <CampoSelect label="DESTINO" value={destino} setValue={setDestino} lista={AREAS} />
-        <CampoSelect label="MATERIAL" value={material} setValue={setMaterial} lista={MATERIAIS} />
-        <CampoNumero label="QUANTIDADE" value={quantidade} setValue={setQuantidade} />
-        <CampoTexto label="OBSERVAÇÕES" value={observacoes} setValue={setObservacoes} />
+        {/* CAMPOS */}
+        <CampoSelect
+          label="ORIGEM"
+          value={origem}
+          setValue={setOrigem}
+          lista={AREAS}
+        />
 
-        <BotaoSalvar texto="REGISTRAR MOVIMENTAÇÃO" />
-        <VoltarInicio />
+        <CampoSelect
+          label="DESTINO"
+          value={destino}
+          setValue={setDestino}
+          lista={AREAS}
+        />
+
+        <CampoSelect
+          label="MATERIAL"
+          value={material}
+          setValue={setMaterial}
+          lista={MATERIAIS}
+        />
+
+        <CampoNumero
+          label="QUANTIDADE"
+          value={quantidade}
+          setValue={setQuantidade}
+        />
+
+        {/* OBSERVAÇÕES (nativo, sem componente externo) */}
+        <div>
+          <label className="block text-sm font-semibold mb-1">
+            OBSERVAÇÕES
+          </label>
+          <textarea
+            value={observacoes}
+            onChange={(e) => setObservacoes(e.target.value)}
+            className="w-full border rounded-xl p-3"
+            rows={3}
+          />
+        </div>
+
+        {/* BOTÕES */}
+        <button
+          onClick={salvar}
+          className="w-full py-3 rounded-xl bg-green-700 text-white font-bold hover:opacity-90 transition"
+        >
+          REGISTRAR MOVIMENTAÇÃO
+        </button>
+
+        <Link
+          href="/"
+          className="block text-center text-sm text-gray-600 hover:underline"
+        >
+          Voltar ao início
+        </Link>
       </div>
-    </div>
+    </main>
   );
 }
