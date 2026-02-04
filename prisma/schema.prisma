@@ -3,28 +3,27 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Fornecedor {
+  id   Int    @id @default(autoincrement())
+  nome String @unique
+}
+
+model Area {
+  id   Int    @id @default(autoincrement())
+  nome String @unique
 }
 
 model Movimentacao {
-  id           Int      @id @default(autoincrement())
-  tipoOperacao String
-  areaOrigem   String?
-  areaDestino  String?
-  tipoPalete   String
-  quantidade   Int
-  fornecedor   String?      // ✅ NOVO CAMPO
-  observacoes  String?      // (se ainda não existir)
-  createdAt    DateTime @default(now())
-}
-model Loja {
-  id     Int    @id @default(autoincrement())
-  digito Int    @unique
-  nome   String
-}
-model Fornecedor {
-  id        Int      @id @default(autoincrement())
-  nome      String   @unique
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  tipo        String
+  origem      String
+  destino     String
+  material    String
+  quantidade  Int
+  observacao  String?
+  createdAt   DateTime @default(now())
 }
