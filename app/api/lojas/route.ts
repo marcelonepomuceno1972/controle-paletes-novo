@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 
@@ -7,7 +9,8 @@ export async function GET() {
       orderBy: { nome: "asc" },
     });
     return NextResponse.json(lojas);
-  } catch {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json([]);
   }
 }

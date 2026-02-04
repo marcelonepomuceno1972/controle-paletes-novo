@@ -1,9 +1,6 @@
-import "./globals.css";
+"use client";
 
-export const metadata = {
-  title: "Sistema de Controle de Paletes",
-  description: "Controle logístico de paletes",
-};
+import "./globals.css";
 
 export default function RootLayout({
   children,
@@ -11,8 +8,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
-      <body className="bg-slate-100">{children}</body>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className="bg-slate-100">
+        {children}
+      </body>
     </html>
   );
 }
