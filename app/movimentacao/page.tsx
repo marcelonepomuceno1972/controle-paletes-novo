@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import CampoSelect from "@/app/components/CampoSelect";
-import CampoNumero from "@/app/components/CampoNumero";
 import Link from "next/link";
 
 const AREAS = [
@@ -48,44 +46,62 @@ export default function MovimentacaoPage() {
     <main className="min-h-screen flex items-center justify-center px-6 bg-slate-100">
       <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-10 space-y-6">
 
-        {/* LOGO */}
-        <div className="flex justify-center">
-          <img src="/logo-oba.png" alt="Logo" className="h-14" />
-        </div>
-
-        <h1 className="text-2xl font-bold text-center text-green-700">
+        <h1 className="text-2xl font-bold text-center">
           MOVIMENTAÇÃO DE PALETES
         </h1>
 
-        {/* CAMPOS */}
-        <CampoSelect
-          label="ORIGEM"
-          value={origem}
-          setValue={setOrigem}
-          lista={AREAS}
-        />
+        <div>
+          <label className="block text-sm font-semibold mb-1">ORIGEM</label>
+          <select
+            value={origem}
+            onChange={(e) => setOrigem(e.target.value)}
+            className="w-full border rounded-xl p-3"
+          >
+            <option value="">Selecione</option>
+            {AREAS.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        </div>
 
-        <CampoSelect
-          label="DESTINO"
-          value={destino}
-          setValue={setDestino}
-          lista={AREAS}
-        />
+        <div>
+          <label className="block text-sm font-semibold mb-1">DESTINO</label>
+          <select
+            value={destino}
+            onChange={(e) => setDestino(e.target.value)}
+            className="w-full border rounded-xl p-3"
+          >
+            <option value="">Selecione</option>
+            {AREAS.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        </div>
 
-        <CampoSelect
-          label="MATERIAL"
-          value={material}
-          setValue={setMaterial}
-          lista={MATERIAIS}
-        />
+        <div>
+          <label className="block text-sm font-semibold mb-1">MATERIAL</label>
+          <select
+            value={material}
+            onChange={(e) => setMaterial(e.target.value)}
+            className="w-full border rounded-xl p-3"
+          >
+            <option value="">Selecione</option>
+            {MATERIAIS.map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
 
-        <CampoNumero
-          label="QUANTIDADE"
-          value={quantidade}
-          setValue={setQuantidade}
-        />
+        <div>
+          <label className="block text-sm font-semibold mb-1">QUANTIDADE</label>
+          <input
+            type="number"
+            value={quantidade}
+            onChange={(e) => setQuantidade(e.target.value)}
+            className="w-full border rounded-xl p-3"
+          />
+        </div>
 
-        {/* OBSERVAÇÕES (nativo, sem componente externo) */}
         <div>
           <label className="block text-sm font-semibold mb-1">
             OBSERVAÇÕES
@@ -98,18 +114,14 @@ export default function MovimentacaoPage() {
           />
         </div>
 
-        {/* BOTÕES */}
         <button
           onClick={salvar}
-          className="w-full py-3 rounded-xl bg-green-700 text-white font-bold hover:opacity-90 transition"
+          className="w-full py-3 rounded-xl bg-green-700 text-white font-bold"
         >
           REGISTRAR MOVIMENTAÇÃO
         </button>
 
-        <Link
-          href="/"
-          className="block text-center text-sm text-gray-600 hover:underline"
-        >
+        <Link href="/" className="block text-center text-sm text-gray-600">
           Voltar ao início
         </Link>
       </div>
