@@ -11,7 +11,7 @@ const AREAS = [
 ];
 
 export async function GET() {
-  const movimentacoes = await prisma.Movimentacao.findMany();
+  const movimentacoes = await prisma.movimentacao.findMany();
 
   function calcularSaldo(area: string) {
     return movimentacoes.reduce((acc, mov) => {
