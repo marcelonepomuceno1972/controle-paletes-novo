@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import CampoSelect from "@/app/components/CampoSelect";
+import CampoNumero from "@/app/components/CampoNumero";
 
 const AREAS = [
   "LOGISTICA REVERSA",
