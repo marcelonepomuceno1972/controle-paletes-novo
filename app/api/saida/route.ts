@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   }
 
   // valida saldo da LOGISTICA REVERSA
-  const movimentos = await prisma.Movimentacao.findMany({
+  const movimentos = await prisma.movimentacao.findMany({
     where: {
       OR: [
         { areaDestino: "LOGISTICA REVERSA", tipoPalete },
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     );
   }
 
-  await prisma.Movimentacao.create({
+  await prisma.movimentacao.create({
     data: {
       tipoOperacao: "SAIDA",
       areaOrigem: "LOGISTICA REVERSA",
