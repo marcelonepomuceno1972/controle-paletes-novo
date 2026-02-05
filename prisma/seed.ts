@@ -5,10 +5,11 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.loja.createMany({
     data: [
-      { digito: 1, nome: "Oba Centro" },
-      { digito: 2, nome: "Oba Norte" },
-      { digito: 3, nome: "Oba Sul" },
-      { digito: 4, nome: "Oba Campinas" }
+      { nome: "Carolina" },
+      { nome: "Ponte Preta" },
+      { nome: "Bonfim" },
+      { nome: "Amoreiras" }
+      // depois você pode completar
     ],
   });
 }
